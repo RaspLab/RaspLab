@@ -1,0 +1,293 @@
+{% extends "base.html" %}
+{% block title %}Admin{{ super() }}{% endblock %}
+{% block content %}
+<style>
+    .to_disable_text {
+        {% if dynamic_load %}opacity:0.5{% endif %}
+    }
+
+    .bottom-notification {
+        position: fixed;
+        bottom: 0px;
+        right: 0px;
+        margin: 10px;
+        !important;
+        margin-bottom: 10px !important;
+    }
+</style>
+{# Hero #}
+<section class="hero is-dark">
+    <div class="container">
+        <div class="hero-body">
+            <h1 class="title">
+                {% if state %}
+                Running
+                <span class="icon is-small" style="color:#2ce28a;position: relative;top: -3px;">
+                  <i class="fa fa-circle"></i>
+              </span>
+              {% else %}
+              Stopped
+              <span class="icon is-small" style="color:#e6005c;position: relative;top: -3px;">
+                  <i class="fa fa-circle"></i>
+              </span>
+              {% endif %}
+          </h1>
+          <h2 class="subtitle">
+            Ultimo aggiornamento {{ last_update }}
+        </h2>
+
+        <form action="stop" method="post" {% if not state %}style="visibility: hidden;"{% endif %}>
+            <button class="button">STOP</button>
+        </form>
+
+
+    </div>
+</div>
+</section>
+
+{# CONTENUTO #}
+<div class="columns">
+    <div class="column is-two-thirds">
+        <section class="section" style="padding: 3rem 1.5rem 0rem 1.5rem">
+            <form action="quicksettings" method="post" id="quick_settings">
+
+                <section class="section" style="padding: 1rem 1.5rem;">
+                    <h1 class="title">Impostazioni rapide</h1>
+                    <section class="section" style="padding: 0rem 1.5rem;">
+
+                        <div class="field">
+
+                            <p class="control">
+                                <label class="checkbox">
+                                    <input id="dynamic" type="checkbox" name="dynamic_load"
+                                    {% if dynamic_load %}checked{% endif %}>
+                                    Aggiornamento dinamico
+                                </label>
+                            </p>
+
+                        </div>
+                        <button type="submit" form="quick_settings" class="form_submit button is-primary">Salva impostazioni
+                        </button>
+                    </section>
+                </section>
+
+            </form>
+        </section>
+        <section class="section">
+
+            <section class="section" style="padding: 1rem 1.5rem;">
+                <h1 class="to_disable_text title">Aggiornamento statico</h1>
+                <section class="section" style="padding: 0rem 1.5rem;">
+                    <form action="update/text" method="post" id="text_form">
+                        <label class="to_disable_text label">Testo</label>
+                        <div class="field">
+                            <p class="control">
+
+                                <input name="text" class="to_disable input " type="text" placeholder="Prima riga">
+
+
+                            </p>
+                        </div>
+                        <div class="field">
+                            <p class="control">
+
+                                <input name="text2" class="to_disable input " type="text"
+                                placeholder="Seconda riga (Opzionale)">
+
+                            </p>
+                        </div>
+                        <div class="field">
+                            <p class="control">
+                                <button class="form_submit to_disable button is-primary" type="submit" form="text_form">Mostra
+                                    testo
+                                </button>
+                            </p>
+                        </div>
+                    </form>
+
+                </section>
+                <section class="section" style="padding: 1rem 1.5rem;">
+                    <form action="update/image" method="post" id="image_form" enctype="multipart/form-data">
+                        <label class="to_disable_text label">Immagine</label>
+
+                        <div class="field has-addons">
+
+
+                            <p class="control">
+                                <input type='file' style="display:none;" name="file" id="imageSubmit"/>
+                                <a id="imageSubmitButton" class="is-dark to_disable button">Seleziona file</a>
+                            </p>
+                            <p class="is-expanded control">
+                                <input id="imagePath" class="input" type="text" placeholder="File path">
+                            </p>
+                            <p class="control">
+                                <button class="form_submit to_disable button is-primary" type="submit" form="image_form">Mostra
+                                    immagine
+                                </button>
+                            </p>
+
+
+                        </div>
+                    </form>
+                </section>
+            </section>
+        </section>
+    </div>
+    <div class="column">
+        <section class="section" style="padding: 4rem 4.5rem 0rem 1.5rem">
+            <h1 class="title">Ultimi accessi</h1>
+            <table class="table">
+                <thead>
+                    <th>
+                        IP
+                    </th>
+                    <th>
+                        Data
+                    </th>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>192.168.2.1</td>
+                        <td>2/3/2017 3:45 PM</td>
+                    </tr>
+                    <tr>
+                        <td>192.168.7.2</td>
+                        <td>13/3/2017 9:23 PM</td>
+                    </tr>
+                    <tr>
+                        <td>192.168.2.9</td>
+                        <td>2/8/2017 9:11 PM</td>
+                    </tr>
+                    <tr>
+                        <td>192.168.2.11</td>
+                        <td>7/11/2017 6:26 AM</td>
+                    </tr>
+                    <tr>
+                        <td>192.168.2.56</td>
+                        <td>2/9/2017 8:34 AM</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+        <section class="section" style="padding: 2rem 4.5rem 0rem 1.5rem">
+            <h1 class="title">Tabella {{ aula }}
+                {% if dynamic_load %}
+                <span class="icon is-small" style="color:#2ce28a;position: relative;top: -5px;">
+                  <i class="fa fa-circle"></i>
+              </span>
+              {% else %}
+              <span class="icon is-small" style="color:#e6005c;position: relative;top: -5px;">
+                  <i class="fa fa-circle"></i>
+              </span>
+              {% endif %}
+
+
+          </h1>
+          <table class="table">
+            <thead>
+                <th>
+                    Materia
+                </th>
+                <th>
+                    Prof
+                </th>
+                <th>
+                    Prof Lab
+                </th>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Inglese</td>
+                    <td>L.Rossi</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Inglese</td>
+                    <td>L.Rossi</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Matematica</td>
+                    <td>P.Copelli</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Informatica</td>
+                    <td>N.Dallago</td>
+                    <td>L.De Carli</td>
+                </tr>
+                <tr>
+                    <td>Informatica</td>
+                    <td>N.Dallago</td>
+                    <td>L.De Carli</td>
+                </tr>
+                <tr>
+                    <td>Informatica</td>
+                    <td>N.Dallago</td>
+                    <td>L.De Carli</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+</div>
+</div>
+
+{# COMMAND LINE #}
+<section class="hero is-dark">
+  <div class="hero-body">
+    <div class="container">
+    <form action="cmd" method="post" id="cmd_form">
+      <h1 class="title">
+        Command line
+    </h1>
+    <div class="field has-addons"><p class="control is-expanded ">
+        <input id="cmd_form" name="cmd" type="text" class="input" placeholder="Command">
+    </p>
+    <p class="control">
+        <button class="form_submit to_disable button is-primary" type="submit" form="cmd_form">Run
+        </button>
+
+    </p>
+</div>
+
+<div class="box" style="color: #2d2d2d">{{stdout}}</div>
+</form>
+</div>
+</div>
+</section>
+
+{# Footer #}
+<footer class="footer">
+    <div class="container">
+        <div class="content has-text-centered">
+            <p>
+                <strong>RaspLab</strong> by <a href="#">3BI</a>.
+            </p>
+            <p>
+                <a class="icon" href="#">
+                    <i class="fa fa-github"></i>
+                </a>
+            </p>
+        </div>
+    </div>
+</footer>
+{# Notifiche #}
+<div class="bottom-notification notification is-success" hidden>
+    <button class="close-notification delete"></button>
+    Hey whatup, I'm a notification
+</div>
+
+<script>
+    {% if dynamic_load %}
+    $(".to_disable").attr('disabled', '');
+    {% endif %}
+    $("#imageSubmitButton").click(function () {
+        $("#imageSubmit").click();
+    });
+    $("#imageSubmit").change(function () {
+        $("#imagePath").val($("#imageSubmit").val().split('\\').pop());
+    });
+
+</script>
+
+{% endblock %}

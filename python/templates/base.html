@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {% block head %}
+    {% endblock %}
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bulma.css') }}"/>
+    <script src="{{ url_for('static', filename='jquery.min.js') }}"></script>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='rasp.png') }}">
+    <title>{% block title %} - RaspLab{% endblock %}</title>
+    <style>
+        nav {
+            box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.07);
+
+        }
+
+        #cambiaClasse {
+
+        }
+
+        ::selection {
+            background: #ff0066; /* WebKit/Blink Browsers */
+        }
+
+        ::-moz-selection {
+            background: #ff0066; /* Gecko Browsers */
+        }
+	.form_submit{
+	
+	}
+    </style>
+    <script>
+        $(document).ready(function () {
+            $(".apriClasse").click(function () {
+                $("#cambiaClasse").addClass("is-active");
+            });
+            $(".chiudiClasse").click(function () {
+                $("#cambiaClasse").removeClass("is-active");
+            });
+            $(".close-notification").click(function () {
+                $(this).parent().fadeOut(function () {
+                    $(this).remove();
+                });
+            });
+	    $(".form_submit").click(function(){
+		$(this).attr('disabled','');
+		$(this).parents('form').submit()
+	    });
+        });
+    </script>
+</head>
+<body>
+<nav class="nav">
+    <div class="nav-left">
+        <div class="nav-item" style="margin-left: 7px">
+            <h5 class="title is-5">
+                RaspLab
+            </h5>
+        </div>
+    </div>
+    <div class="nav-right">
+        <a class="apriClasse nav-item">
+            <span style="margin-right: 7px;">{{ aula }}</span>
+        </a>
+    </div>
+</nav>
+
+{# Modal #}
+<div id="cambiaClasse" class="modal">
+    <div class="chiudiClasse modal-background"></div>
+    <div class="modal-card">
+<form action="update/aula" method="post" id="aula_form">
+        <header class="modal-card-head">
+            <p class="modal-card-title">Modifica aula</p>
+            <button class="chiudiClasse delete"></button>
+        </header>
+        <section class="modal-card-body">
+            <p class="control">
+            
+                <input class="input" type="text" placeholder="Aula" name="aula">
+            
+            </p>
+        </section>
+        <footer class="modal-card-foot">
+            <button class="form_submit to_disable button is-primary" type="submit" form="aula_form">Salva modifica</button>
+            <a class="chiudiClasse button">Annulla</a>
+        </footer>
+</form>
+
+    </div>
+</div>
+
+{# Contenuto #}
+{% block content %}
+{% endblock %}
+</body>
+</html>
