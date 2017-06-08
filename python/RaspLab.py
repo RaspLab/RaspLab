@@ -177,25 +177,20 @@ def reload_dynamic_setting():
     fn_kill_process(on)
     fn_kill_process(on2)
     change = False
-    download_success = False
-    already_started = True
     if dynamic:
-        while not download_success:
-            try:
-                orarioSettimanale = json.loads(requests.get('http://{}:5001/get/'.format(server_ip) + settings['aula']).text)
-                ore = json.loads(requests.get('http://{}:5001/get/'.format(server_ip) + 'ore').text)["hour"]
-                download_success = True
-            except:
-                orarioSettimanale = None
-                ore = None
-                sDomenica = 'errore'
-                speed = 30
-                domenica = '0'
-                if already_started:
-                    already_started=False
-                    p = Popen('sudo ../demo -D 1 gen/{filename}.ppm --led-no-hardware-pulse --led-rows=32 --led-chain=1 -m {duration}'.format(filename=sDomenica,duration=speed),shell=True,stdout=PIPE)
-                time.sleep(3)
-        fn_kill_process([p])        
+        try:
+            orarioSettimanale = json.loads(requests.get('http://{}:5001/get/'.format(server_ip) + settings['aula']).text)
+            ore = json.loads(requests.get('http://{}:5001/get/'.format(server_ip) + 'ore').text)["hour"]
+        except:
+            orarioSettimanale = None
+            ore = None
+            sDomenica = 'errore'
+            speed = 30
+            domenica = '0'
+            already_started = False
+            p = Popen('sudo ../demo -D 1 gen/{filename}.ppm --led-no-hardware-pulse --led-rows=32 --led-chain=1 -m {duration}'.format(filename=sDomenica,duration=speed),shell=True,stdout=PIPE)
+            on.append(p)
+            return   
         day = getDay()
         hours = int(getHours())
         print(hours)
@@ -205,11 +200,12 @@ def reload_dynamic_setting():
             print("DYNAMIC")
 
             for i in range(len(ore)):
+                print('i =', i)
                 print(hours, ore[i][0], ore[i][1])
                 if hours >= ore[i][0] and hours < ore[i][1]:
-                    if orarioSettimanale[day][ore.index(ore[i])] != []:
+                    if orarioSettimanale[day][i] != []:
                         context['state'] = 1
-                        download_thread = threading.Thread(target=fn_matrix, args=(orarioSettimanale[day][ore.index(ore[i])][0], orarioSettimanale[day][ore.index(ore[i])][1], orarioSettimanale[day][ore.index(ore[i])][2]))
+                        download_thread = threading.Thread(target=fn_matrix, args=(orarioSettimanale[day][i][0], orarioSettimanale[day][i][1], orarioSettimanale[day][i][2]))
                         download_thread.start()
 
                         changeHour = int(str(ore[i][1]).split('.')[1])
@@ -217,14 +213,14 @@ def reload_dynamic_setting():
                         while  minute < changeHour:
                             timeSleep = changeHour - minute
 
-                            time.sleep(timeSleep//2 + 1)
+                            time.sleep(timeSleep)
 
                             minute = int(getMinutes())
                         change = False
                     
                     else:
                         buche = False
-                    print('dddddd')
+                    
                 else:
                     buche = True
             if buche:
